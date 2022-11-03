@@ -1,10 +1,12 @@
 import typing as tp
 from math import cos, log, log10, sin, tan
 
+
 def check(string: str):
     if string.isalnum() or len(string) < 5 or string.count("(") != string.count(")"):
         return False
     return True
+
 
 def match_case_calc_1(num: float, command: str):
     match command:
@@ -26,8 +28,7 @@ def match_case_calc_1(num: float, command: str):
             return f"Неизвестный оператор: {command!r}."
 
 
-def match_case_calc_2(num_1: float, num_2: float, command: str)\
-        -> tp.Union[float, str]:  # type: ignore
+def match_case_calc_2(num_1: float, num_2: float, command: str) -> tp.Union[float, str]:  # type: ignore
     match command:
         case "/" if num_2 != 0:
             return num_1 / num_2
@@ -58,18 +59,17 @@ def change(num1: int, num2: int):
 
 T = True
 while T:
-    print("Выберите тип операции:", "Справка : 0",
-          "Двуместная : 1", "Одноместная : 2", "Выход : 3", sep=("\n"))
+    print("Выберите тип операции:\nСправка : 0")
+    print("Двуместная : 1\nОдноместная : 2\nВыход : 3")
     c = input("\n")
     match c:
         case "1":
-            print("Выберите тип операции:", "Одно действие : 0",
-                  "Более одного действия : 1", sep=("\n"))
+            print("Выберите тип операции:\nОдно действие : 0")
+            print("Более одного действия : 1\n")
             c2 = input("\n")
             match c2:
                 case "0":
-                    string = input("Введите выражение:"
-                                   " символы через пробел, затем нажмите Enter: ")
+                    string = input("Введите выражение:" " символы через пробел, затем нажмите Enter: ")
                     if check(string):
                         n1, d, n2 = string.split(" ")
                         print(string, "=", match_case_calc_2(float(n1), float(n2), d))
@@ -81,8 +81,8 @@ while T:
                 case _:
                     pass
         case "2":
-            print("Выберите тип операции:", "Одно действие : 0",
-                  "Более одного действия : 1", sep=("\n"))
+            print("Выберите тип операции:\nОдно действие : 0")
+            print("Более одного действия : 1\n")
             c1 = input("\n")
             match c1:
                 case "0":
@@ -108,8 +108,7 @@ while T:
                 "Деление, ввод: a / b",
                 "Умножение, ввод: a * b",
                 "Возведение в степень, ввод: a ** b",
-                "Перевод десятичного числа в систему счисления"
-                " с основанием [2,9], ввод: a to b",
+                "Перевод десятичного числа в систему счисления" " с основанием [2,9], ввод: a to b",
                 sep=("\n"),
             )
             print("\n")
