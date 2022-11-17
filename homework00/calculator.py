@@ -75,11 +75,11 @@ while T:
                         string = input("Введите выражение: символы через пробел + Enter: ")
                         if check(string):
                             n1, d, n2 = string.split(" ")
-                            if not (n1.isdigit() and n2.isdigit()):
-                                print(f"Некорректный ввод: {string!r}.")
-                            else:
+                            try:
                                 print(string, "=", match_case_calc_2(float(n1), float(n2), d), "\n")
                                 T = False
+                            except ValueError or n1.isalnum() or n2.isalnum():
+                                print(f"Некорректный ввод: {string!r}.")
                         else:
                             print(f"Некорректный ввод: {string!r}.")
                     case "1":
