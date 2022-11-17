@@ -42,7 +42,7 @@ def match_case_calc_2(num_1: float, num_2: float, command: str) -> tp.Union[floa
             return num_1 * num_2
         case "**":
             return pow(num_1, num_2)
-        case "to" if 1 < num_2 < 10 and num_1 >= 0:
+        case "to" if 1 < num_2 < 10 and num_1 > -1:
             return change(int(num_1), int(num_2))
         case _:
             return f"Неизвестный оператор: {command!r}."
@@ -76,7 +76,7 @@ while T:
                         if check(string):
                             n1, d, n2 = string.split(" ")
                             try:
-                                if not (n1.isalnum() or n2.isalnum()):
+                                if n1.isalnum() or n2.isalnum():
                                     print(string, "=", match_case_calc_2(float(n1), float(n2), d), "\n")
                                     T = False
                                 else:
