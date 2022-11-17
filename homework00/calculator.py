@@ -76,9 +76,12 @@ while T:
                         if check(string):
                             n1, d, n2 = string.split(" ")
                             try:
-                                print(string, "=", match_case_calc_2(float(n1), float(n2), d), "\n")
-                                T = False
-                            except ValueError or n1.isalnum() or n2.isalnum():
+                                if not (n1.isalnum() or n2.isalnum()):
+                                    print(string, "=", match_case_calc_2(float(n1), float(n2), d), "\n")
+                                    T = False
+                                else:
+                                    print(f"Некорректный ввод: {string!r}.")
+                            except ValueError:
                                 print(f"Некорректный ввод: {string!r}.")
                         else:
                             print(f"Некорректный ввод: {string!r}.")
