@@ -12,9 +12,9 @@ def is_prime(n: int) -> bool:
     >>> is_prime(8)
     False
     """
-    if n < 2:
+    if n < 2 or (n % 2 == 0 and n != 2):
         return False
-    for i in range(2, int(n**0.5) + 1):
+    for i in range(3, int(n**0.5) + 1, 2):
         if n % i == 0:
             return False
     return True
@@ -28,12 +28,10 @@ def gcd(a: int, b: int) -> int:
     >>> gcd(3, 7)
     1
     """
-    m, v = max(a, b), min(a, b)
-    if v == 0:
-        return m
-    while m % v != 0:
-        m, v = max(m % v, v), min(m % v, v)
-    return min(m, v)
+    a, b = max(a, b), min(a, b)
+    while b:
+        a, b = b, a % b
+    return a
 
 
 def multiplicative_inverse(e: int, phi: int) -> int:
@@ -43,28 +41,14 @@ def multiplicative_inverse(e: int, phi: int) -> int:
     >>> multiplicative_inverse(7, 40)
     23
     """
-    t = [[0] * 6]
-    t[0][0] = e
-    t[0][1] = phi
-    t[0][2] = e % t[0][1]
-    t[0][3] = e // t[0][1]
-    i = 1
-    if t[0][2] == 0:
+    if e % phi == 0:
         return 0
-    while True:
-        t.append([0] * 6)
-        t[i][0] = t[i - 1][1]
-        t[i][1] = t[i - 1][2]
-        t[i][2] = t[i][0] % t[i][1]
-        t[i][3] = t[i][0] // t[i][1]
-        i += 1
-        if t[i - 1][2] == 0:
-            break
-    t[i - 1][4] = 0
-    t[i - 1][5] = 1
-    for j in range(i - 2, -1, -1):
-        t[j][4] = t[j + 1][5]
-        t[j][5] = t[j + 1][4] - t[j + 1][5] * t[j][3]
+    t = [[e, phi, e % phi, e // phi, 0, 1]]
+    while e % phi:
+        e, phi = phi, e % phi
+        t.append([e, phi, e % phi, e // phi, 0, 1])
+    for i in range(len(t) - 2, -1, -1):
+        t[i][4], t[i][5] = t[i + 1][5], t[i + 1][4] - t[i + 1][5] * t[i][3]
     return t[0][4] % t[0][1]
 
 
