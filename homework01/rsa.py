@@ -12,8 +12,12 @@ def is_prime(n: int) -> bool:
     >>> is_prime(8)
     False
     """
-    # PUT YOUR CODE HERE
-    pass
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
 
 
 def gcd(a: int, b: int) -> int:
@@ -24,8 +28,12 @@ def gcd(a: int, b: int) -> int:
     >>> gcd(3, 7)
     1
     """
-    # PUT YOUR CODE HERE
-    pass
+    m, v = max(a, b), min(a, b)
+    if v == 0:
+        return m
+    while m % v != 0:
+        m, v = max(m % v, v), min(m % v, v)
+    return min(m, v)
 
 
 def multiplicative_inverse(e: int, phi: int) -> int:
@@ -35,21 +43,42 @@ def multiplicative_inverse(e: int, phi: int) -> int:
     >>> multiplicative_inverse(7, 40)
     23
     """
-    # PUT YOUR CODE HERE
-    pass
+    t = [[0] * 6]
+    t[0][0] = e
+    t[0][1] = phi
+    t[0][2] = e % t[0][1]
+    t[0][3] = e // t[0][1]
+    i = 1
+    if t[0][2] == 0:
+        return 0
+    while True:
+        t.append([0] * 6)
+        t[i][0] = t[i - 1][1]
+        t[i][1] = t[i - 1][2]
+        t[i][2] = t[i][0] % t[i][1]
+        t[i][3] = t[i][0] // t[i][1]
+        i += 1
+        if t[i - 1][2] == 0:
+            break
+    t[i - 1][4] = 0
+    t[i - 1][5] = 1
+    for j in range(i - 2, -1, -1):
+        t[j][4] = t[j + 1][5]
+        t[j][5] = t[j + 1][4] - t[j + 1][5] * t[j][3]
+    return t[0][4] % t[0][1]
 
 
-def generate_keypair(p: int, q: int) -> tp.Tuple[tp.Tuple[int, int], tp.Tuple[int, int]]:
+def generate_keypair(p: int, q: int) -> tp.Tuple[tp.Tuple[int, int], tp.Tuple[int, int]]:  # type: ignore
     if not (is_prime(p) and is_prime(q)):
         raise ValueError("Both numbers must be prime.")
     elif p == q:
         raise ValueError("p and q cannot be equal")
 
     # n = pq
-    # PUT YOUR CODE HERE
+    n = p * q
 
     # phi = (p-1)(q-1)
-    # PUT YOUR CODE HERE
+    phi = (p - 1) * (q - 1)
 
     # Choose an integer e such that e and phi(n) are coprime
     e = random.randrange(1, phi)
@@ -82,7 +111,7 @@ def decrypt(pk: tp.Tuple[int, int], ciphertext: tp.List[int]) -> str:
     # Unpack the key into its components
     key, n = pk
     # Generate the plaintext based on the ciphertext and key using a^b mod m
-    plain = [chr((char ** key) % n) for char in ciphertext]
+    plain = [chr((char**key) % n) for char in ciphertext]
     # Return the array of bytes as a string
     return "".join(plain)
 
