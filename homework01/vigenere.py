@@ -12,20 +12,21 @@ def encrypt_vigenere(plaintext: str, keyword: str) -> str:
     'LXFOPVEFRNHR'
     """
     ciphertext = ""
-    for i in range(len(plaintext) - len(keyword)):
-        keyword += keyword[i]
     keyword = keyword.upper()
     for i in range(len(plaintext)):
-        if plaintext[i].islower() and plaintext[i].isalpha():
-            if (ord(plaintext[i]) + (ord(keyword[i]) - ord("A"))) > ord("z"):
-                ciphertext += chr(((ord(plaintext[i]) + (ord(keyword[i]) - ord("A"))) % ord("z")) + (ord("a")) - 1)
+        if plaintext[i].isalpha():
+            if plaintext[i].islower():
+                ciphertext += chr(
+                    ord("z")
+                    - (ord("z") - ord(plaintext[i]) + ord("A") - ord(keyword[i % len(keyword)]))
+                    % (ord("z") - (ord("a")) + 1)
+                )
             else:
-                ciphertext += chr(ord(plaintext[i]) + (ord(keyword[i]) - ord("A")))
-        elif plaintext[i].isupper() and plaintext[i].isalpha():
-            if (ord(plaintext[i]) + (ord(keyword[i]) - ord("A"))) > ord("Z"):
-                ciphertext += chr(((ord(plaintext[i]) + (ord(keyword[i]) - ord("A"))) % ord("Z")) + (ord("A")) - 1)
-            else:
-                ciphertext += chr(ord(plaintext[i]) + (ord(keyword[i]) - ord("A")))
+                ciphertext += chr(
+                    ord("Z")
+                    - (ord("Z") - ord(plaintext[i]) + ord("A") - ord(keyword[i % len(keyword)]))
+                    % (ord("Z") - (ord("A")) + 1)
+                )
         else:
             ciphertext += plaintext[i]
     return ciphertext
@@ -42,20 +43,21 @@ def decrypt_vigenere(ciphertext: str, keyword: str) -> str:
     'ATTACKATDAWN'
     """
     plaintext = ""
-    for i in range(len(ciphertext) - len(keyword)):
-        keyword += keyword[i]
     keyword = keyword.upper()
     for i in range(len(ciphertext)):
-        if ciphertext[i].islower() and ciphertext[i].isalpha():
-            if (ord(ciphertext[i]) - (ord(keyword[i]) - ord("A"))) < ord("a"):
-                plaintext += chr(ord("z") + 1 - (ord("a") - (ord(ciphertext[i]) - (ord(keyword[i]) - ord("A")))))
+        if ciphertext[i].isalpha():
+            if ciphertext[i].islower():
+                plaintext += chr(
+                    ord("z")
+                    - (ord("z") - ord(ciphertext[i]) - ord("A") + ord(keyword[i % len(keyword)]))
+                    % (ord("z") - (ord("a")) + 1)
+                )
             else:
-                plaintext += chr(ord(ciphertext[i]) - (ord(keyword[i]) - ord("A")))
-        elif ciphertext[i].isupper() and ciphertext[i].isalpha():
-            if (ord(ciphertext[i]) - (ord(keyword[i]) - ord("A"))) < ord("A"):
-                plaintext += chr(ord("Z") + 1 - (ord("A") - (ord(ciphertext[i]) - (ord(keyword[i]) - ord("A")))))
-            else:
-                plaintext += chr(ord(ciphertext[i]) - (ord(keyword[i]) - ord("A")))
+                plaintext += chr(
+                    ord("Z")
+                    - (ord("Z") - ord(ciphertext[i]) - ord("A") + ord(keyword[i % len(keyword)]))
+                    % (ord("Z") - (ord("A")) + 1)
+                )
         else:
             plaintext += ciphertext[i]
     return plaintext
