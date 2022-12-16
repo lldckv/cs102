@@ -135,12 +135,7 @@ def solve(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.List[tp.List[str]]]:  #
             return res
         grid[pos[0]][pos[1]] = "."
     return None
-    #  grid[empty_pos[0]][empty_pos[1]] = val
-    # if solve(grid) is None:
-    #    grid[empty_pos[0]][empty_pos[1]] = "."
-    # else:
-    #   return solve(grid)
-    # return None
+
 
 
 def check_solution(solution: tp.List[tp.List[str]]) -> bool:
@@ -179,7 +174,7 @@ def generate_sudoku(N: int) -> tp.List[tp.List[str]]:  # Type : Ignore
     """
     k = 0
     grid = solve([["."] * 9 for _ in range(9)])
-    while k != 81 - N:
+    while k < 81 - N:
         pos = (randint(0, 8), randint(0, 8))  # type: ignore
         if grid[pos[0]][pos[1]] != ".":  # type: ignore
             grid[pos[0]][pos[1]] = "."  # type: ignore
