@@ -36,9 +36,9 @@ def show_solution():
 
 if __name__ == "__main__":
     global GRID, CELL_SIZE
-    N, M = 51, 77
+    N, M = 15, 15
 
-    CELL_SIZE = 10  # Type : Ignore
+    CELL_SIZE = 15  # Type : Ignore
     GRID = bin_tree_maze(N, M)  # Type : Ignore
 
     window = tk.Tk()
