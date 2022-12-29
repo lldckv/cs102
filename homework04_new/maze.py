@@ -137,7 +137,7 @@ def shortest_path(
             pass
         k = k - 1
 
-    if len(path) != pawn or grid[path[-1][0]][path[-1][1]] != 1:
+    if len(path) != pawn:
         x, y = path[-1]
         grid[x][y] = " "
         return shortest_path(grid, exit_coord)
