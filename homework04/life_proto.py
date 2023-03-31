@@ -42,21 +42,22 @@ class GameOfLife:
         self.screen.fill(pygame.Color("white"))
 
         # Создание списка клеток
-        self.grid = self.create_grid()
+        self.grid = self.create_grid(True)
 
         running = True
         while running:
+            self.draw_grid()
+            self.draw_lines()
             for event in pygame.event.get():
                 if event.type == QUIT:
                     running = False
-            self.draw_lines()
 
-            # Отрисовка списка клеток
-            # Выполнение одного шага игры (обновление состояния ячеек)
-            self.draw_grid()
-            self.grid = self.get_next_generation()
-            pygame.display.flip()
-            clock.tick(self.speed)
+                # Отрисовка списка клеток
+                # Выполнение одного шага игры (обновление состояния ячеек)
+
+                self.grid = self.get_next_generation()
+                pygame.display.flip()
+                clock.tick(self.speed)
         pygame.quit()
 
     def create_grid(self, randomize: bool = False) -> Grid:
@@ -144,3 +145,8 @@ class GameOfLife:
                 if (c == 2 and self.grid[i][j] == 1) or c == 3:
                     new_grid[i][j] = 1
         return new_grid
+
+
+if __name__ == "__main__":
+    game = GameOfLife(speed=100)
+    game.run()

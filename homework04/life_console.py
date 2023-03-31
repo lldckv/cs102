@@ -33,10 +33,10 @@ class Console(UI):
         screen = curses.initscr()
         # PUT YOUR CODE HERE
         screen.nodelay(True)
-        screen.resize(self.life.rows + 2, self.life.cols + 2)
+        screen.resize(self.life.rows + 3, self.life.cols + 3)
 
         self.draw_borders(screen)
-        while screen.getch() != ord("q"):
+        while screen.getch() != ord("e"):
             self.draw_grid(screen)
             self.life.step()
             screen.refresh()

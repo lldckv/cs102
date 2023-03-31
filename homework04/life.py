@@ -82,7 +82,7 @@ class GameOfLife:
         """
         Прочитать состояние клеток из указанного файла.
         """
-        with open(filename, "r") as f1:
+        with open(filename, "r", encoding="utf-8") as f1:
             grid = [list(map(int, t.strip())) for t in f1.readlines() if len(t.strip()) != 0]
         game = GameOfLife((len(grid), len(grid[0])))
         game.curr_generation = grid
@@ -92,6 +92,6 @@ class GameOfLife:
         """
         Сохранить текущее состояние клеток в указанный файл.
         """
-        with open(filename, "w") as f2:
+        with open(filename, "w", encoding="utf-8") as f2:
             for row in self.curr_generation:
                 f2.write(" ".join(map(str, row)) + "\n")
