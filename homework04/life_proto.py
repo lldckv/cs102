@@ -119,13 +119,13 @@ class GameOfLife:
         out : Cells
             Список соседних клеток.
         """
-        ind = [
+        arr = [
             x
             for x in [(cell[0] + i, cell[1] + j) for i in range(-1, 2) for j in range(-1, 2)]
             if (-1 < x[0] < self.cell_height and -1 < x[1] < self.cell_width)
         ]
-        ind.remove(cell)
-        cells = [self.grid[x[0]][x[1]] for x in ind]
+        arr.remove(cell)
+        cells = [self.grid[x[0]][x[1]] for x in arr]
         return cells
 
     def get_next_generation(self) -> tp.List[Cells]:  # Type : Ignore

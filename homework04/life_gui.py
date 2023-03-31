@@ -76,6 +76,6 @@ class GUI(UI):
         pygame.quit()
 
 
-game = GameOfLife((24, 80))
+game = GameOfLife((24, 50))
 ui = GUI(game, 10)
 ui.run()

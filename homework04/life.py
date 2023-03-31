@@ -36,13 +36,13 @@ class GameOfLife:
         return grid
 
     def get_neighbours(self, cell: Cell) -> Cells:
-        indices = [
+        ind = [
             x
             for x in [(cell[0] + i, cell[1] + j) for i in range(-1, 2) for j in range(-1, 2)]
             if (-1 < x[0] < self.rows and -1 < x[1] < self.cols)
         ]
-        indices.remove(cell)
-        cells = [self.curr_generation[x[0]][x[1]] for x in indices]
+        ind.remove(cell)
+        cells = [self.curr_generation[x[0]][x[1]] for x in ind]
         return cells
 
     def get_next_generation(self) -> Grid:
