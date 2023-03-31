@@ -74,8 +74,3 @@ class GUI(UI):
                     pygame.display.flip()
                     clock.tick(self.speed)
         pygame.quit()
-
-
-game = GameOfLife((24, 50))
-ui = GUI(game, 10)
-ui.run()
