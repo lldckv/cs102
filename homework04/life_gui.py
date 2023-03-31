@@ -1,6 +1,7 @@
 import pygame
-from life import GameOfLife
 from pygame.locals import *
+
+from life import GameOfLife
 from ui import UI
 
 
@@ -9,13 +10,13 @@ class GUI(UI):
         super().__init__(life)
         self.game = life
         self.cell_size = cell_size
-        self.height = cell_size * life.rows
         self.width = cell_size * life.cols
+        self.height = cell_size * life.rows
+        self.cell_height = life.rows
+        self.cell_width = life.cols
         self.screen_size = cell_size * life.cols, cell_size * life.rows
         self.max_generations = life.max_generations
         self.screen = pygame.display.set_mode(self.screen_size)
-        self.cell_height = life.rows
-        self.cell_width = life.cols
         self.speed = speed
 
     def draw_lines(self) -> None:
@@ -48,7 +49,12 @@ class GUI(UI):
         self.screen.fill(pygame.Color("white"))
         running = True
         paused = False
-        while self.game.is_changing and self.game.is_max_generations_exceeded and running:
+        self.game.step()
+        self.draw_grid()
+        self.draw_lines()
+        pygame.display.flip()
+        clock.tick(self.speed)
+        while self.game.is_changing and not self.game.is_max_generations_exceeded and running:
             if not paused:
                 self.game.step()
                 self.draw_grid()
@@ -73,3 +79,8 @@ class GUI(UI):
                     pygame.display.flip()
                     clock.tick(self.speed)
         pygame.quit()
+
+
+if __name__ == "__main__":
+    game = GUI(GameOfLife((50, 50), randomize=True), cell_size=10, speed=1)
+    game.run()
