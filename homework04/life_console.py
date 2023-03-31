@@ -31,7 +31,6 @@ class Console(UI):
 
     def run(self) -> None:
         screen = curses.initscr()
-        # screen.clear()
         # PUT YOUR CODE HERE
         screen.nodelay(True)
         screen.resize(self.life.rows + 2, self.life.cols + 2)
@@ -41,6 +40,4 @@ class Console(UI):
             self.draw_grid(screen)
             self.life.step()
             screen.refresh()
-        curses.endwin()
-
         curses.endwin()
