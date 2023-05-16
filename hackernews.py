@@ -1,6 +1,6 @@
 import sqlite3
 
-from bottle import redirect, request, route, run, template
+from bottle import redirect, request, route, run, template  # type:ignore
 
 from bayes import NaiveBayesClassifier
 from db import News, session
@@ -50,29 +50,24 @@ def update_news():
 @route("/classify")
 def classify_news():
     s = session()
+    bayes = NaiveBayesClassifier()
     classified = s.query(News).filter(News.label != None).all()
-    p = [i.title if i.title is not None else "" for i in classified]
-    z = [
-        p[i] + " " + classified[i].author if classified[i].author is not None else p[i] for i in range(len(classified))
-    ]
+    x = [i.title for i in classified]
     y = [i.label for i in classified]
-
-    model = NaiveBayesClassifier()
-    model.fit(z, y)
-    unclassified = s.query(News).filter(News.label == None).all()
-    rows = unclassified[:10]
-    new_rows = []
-    for row in rows:
-        t = (lambda x: x if x is not None else "")(row.title)
-        a = (lambda x: x if x is not None else "")(row.author)
-        output = model.predict([t + " " + a])
-        s.query(News).filter(News.id == row.id).update({"label": output[0]})
-        new_rows.append(row)
-
+    bayes.fit(x, y)
+    news = s.query(News).filter(News.label == None).all()[:3]
+    X = [i.title if i.title is not None else '' for i in news]
+    output = bayes.predict(X)
+    for i in range(len(news)):
+        news[i].label = output[i]
     s.commit()
-    # sorted_list = sorted(new_rows, key=lambda x: x.label)
-    sorted_list = sorted([row for row in new_rows if row.label is not None], key=lambda x: x.label)
-    return template("news_recommendations", rows=sorted_list)
+    classified_news = sorted(news, key=lambda x: x.label)
+    return classified_news
+
+@route("/recommendations")
+def recommendations():
+    classified_news = classify_news()
+    return template("news_recommendations", rows=classified_news)
 
 
 if __name__ == "__main__":
