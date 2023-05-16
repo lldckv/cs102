@@ -56,13 +56,14 @@ def classify_news():
     y = [i.label for i in classified]
     bayes.fit(x, y)
     news = s.query(News).filter(News.label == None).all()[:3]
-    X = [i.title if i.title is not None else '' for i in news]
+    X = [i.title if i.title is not None else "" for i in news]
     output = bayes.predict(X)
     for i in range(len(news)):
         news[i].label = output[i]
     s.commit()
     classified_news = sorted(news, key=lambda x: x.label)
     return classified_news
+
 
 @route("/recommend")
 def recommend():
