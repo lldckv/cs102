@@ -14,7 +14,7 @@ class NaiveBayesClassifier:
     def fit(self, X_train, Y_train):
         self.classes = list(set(Y_train))
         for i in range(len(X_train)):
-            words = (re.sub(r'\W+', ' ', X_train[i].lower())).split(' ')
+            words = (re.sub(r"\W+", " ", X_train[i].lower())).split(" ")
             c = Y_train[i]
             self.class_counts[c] += 1
             for w in words:
@@ -30,12 +30,12 @@ class NaiveBayesClassifier:
     def predict(self, X_test):
         Y_output = []
         for x in X_test:
-            words = (re.sub(r'\W+', ' ', x.lower())).split(' ')
+            words = (re.sub(r"\W+", " ", x.lower())).split(" ")
             scores = {c: 0 for c in self.classes}
             for c in self.classes:
                 score = 0
                 for w in words:
-                    score += (lambda x: math.log(x) if x>0 else 0)(self.word_counts[c][w])
+                    score += (lambda x: math.log(x) if x > 0 else 0)(self.word_counts[c][w])
                 score += math.log(self.class_counts[c] / sum(self.class_counts.values()))
                 scores[c] = score
             y_pred = max(scores, key=scores.get)
