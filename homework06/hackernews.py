@@ -1,8 +1,8 @@
-import sqlite3
+import sqlite3  # type:ignore
 from bayes import NaiveBayesClassifier
 from bottle import redirect, request, route, run, template  # type:ignore
-from db import News, session
-from scraputils import get_news
+from db import News, session  # type:ignore
+from scraputils import get_news  # type:ignore
 
 
 @route("/news")

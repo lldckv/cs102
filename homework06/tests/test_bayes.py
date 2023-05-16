@@ -1,7 +1,7 @@
-import csv
-import string
-import unittest
-from bayes import NaiveBayesClassifier
+import csv  # type:ignore
+import string  # type:ignore
+import unittest  # type:ignore
+from bayes import NaiveBayesClassifier  # type:ignore
 
 PATH_FOR_GIT = "/home/runner/work/cs102/cs102/homework06/"
 
