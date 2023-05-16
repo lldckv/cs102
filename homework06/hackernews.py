@@ -1,7 +1,7 @@
-from bayes import NaiveBayesClassifier
-from bottle import redirect, request, route, run, template
-from db import News, session
-from scraputils import get_news
+from bayes import NaiveBayesClassifier  # type: ignore
+from bottle import redirect, request, route, run, template  # type: ignore
+from db import News, session  # type: ignore
+from scraputils import get_news  # type: ignore
 
 
 @route("/news")
