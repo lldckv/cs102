@@ -382,8 +382,8 @@ def clear_subject_list(message):
 def start(message):
     start_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     start_markup.row("Посмотреть дедлайны на этой неделе")
-    start_markup.row("Редактировать дедлайны")
     start_markup.row("Редактировать предметы")
+    start_markup.row("Редактировать дедлайны")
     start_markup.row("Подключить Google-таблицу")
     info = bot.send_message(message.chat.id, "Что хотите сделать?", reply_markup=start_markup)
     bot.register_next_step_handler(info, choose_action)
