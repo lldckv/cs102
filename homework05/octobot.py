@@ -118,7 +118,14 @@ def choose_action(message):
 def choose_subject_action(message):
     """Выбираем действие в разделе Редактировать предметы"""
     if message.text == "Удалить предмет":
-        info = bot.send_message(message.chat.id, "Название предмета:")
+        start_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+        df = access_current_sheet()[2]
+
+        for subject in df["Subject"]:
+            start_markup.row(subject)
+        start_markup.row("Главное меню")
+
+        info = bot.send_message(message.chat.id, "Название предмета:", reply_markup=start_markup)
         bot.register_next_step_handler(info, delete_subject)
 
     elif message.text == "Изменить название и url предмета":
@@ -159,15 +166,19 @@ def show_deadlines(message):
                 date = convert_date("/".join(section.split(section[2])))
                 today = datetime.today()
 
-                if (date - today).days <= 7 and date >= today:
+                if (date - today).days <= 7 and date > today:
                     text_ += f"          {i} задание >> {section}           На этой неделе! \n"
+                elif (date - today).days < 1:
+                    text_ += f"          {i} задание >> {section}           !СЕГОДНЯ! \n"
                 else:
-                    text_ += f"          {i} задание >> {section}           Время еще есть! До сдачи {(date - today).days }дн. \n"
+                    text_ += f"          {i} задание >> {section}           Время еще есть! До дедлайна {(date - today).days} дн.\n"
 
         text = f"{header}\n{text_}" if text_ else header + " Дедлайнов нет! Можно жить спокойно..."
         post.append(text)
-
-    bot.send_message(message.chat.id, "\n\n".join(post))
+    if df.shape[0] == 0:
+        bot.send_message(message.chat.id, "Таблица данных пуста!")
+    else:
+        bot.send_message(message.chat.id, "\n\n".join(post))
     start(message)
 
 
@@ -260,7 +271,7 @@ def update_subject_deadline(msg, message_):
             )
             start(msg)
     except ValueError:
-        bot.send_message(msg.chat.id, "Номер задания, новый дедлайн (dd/mm/yy):")
+        bot.send_message(msg.chat.id, "Некорректный ввод! Номер задания, новый дедлайн (dd/mm/yy):")
         start(msg)
 
 
@@ -283,7 +294,7 @@ def delete_deadline(msg):
         start(msg)
 
     except ValueError:
-        bot.send_message(msg.chat.id, "Название предмета, номер задания через запятую:")
+        bot.send_message(msg.chat.id, "Некорректный ввод! Название предмета, номер задания через запятую:")
         start(msg)
 
 
@@ -329,14 +340,14 @@ def update_subject(message):
     def new_subject_and_url(msg):
         try:
             sub, url = [el.strip() for el in msg.text.split(",")]
+            updated_subject_row = worksheet.find(message_).row
+            worksheet.update_cell(updated_subject_row, 1, sub)
             if is_valid_url(url):
-                updated_subject_row = worksheet.find(message_).row
-                worksheet.update_cell(updated_subject_row, 1, sub)
                 worksheet.update_cell(updated_subject_row, 2, url)
-                bot.send_message(msg.chat.id, "Информация о предмете обновлена")
+                bot.send_message(msg.chat.id, "Информация о предмете и ссылка обновлена")
                 start(msg)
             else:
-                bot.send_message(msg.chat.id, "Неккоректный url")
+                bot.send_message(msg.chat.id, "Неккоректный url, название обновлено")
                 start(msg)
         except ValueError:
             bot.send_message(msg.chat.id, "Новая информация через запятую:")
@@ -370,7 +381,9 @@ def clear_subject_list(message):
         start(message)
 
     else:
-        bot.send_message(message.chat.id, "Выберите действие для очистки перед тем как продолжить: (Да/Нет)")
+        bot.send_message(
+            message.chat.id, "Некорректный ввод! Выберите действие для очистки перед тем как продолжить: (Да/Нет)"
+        )
         bot.register_next_step_handler(message, clear_subject_list)
 
 
