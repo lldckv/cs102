@@ -35,7 +35,7 @@ def get_friends(
         query = f"/friends.get?access_token={c['access_token']}&user_id={user_id}&count={count}&offset={offset}&v={c['version']}"
     try:
         response = session.get(url=str(query)).json()["response"]
-        res=[]
+        res = []
         for friend in response["items"]:
             res.append(friend)
         return FriendsResponse(count=response["count"], items=res)

@@ -80,4 +80,5 @@ def describe_communities(
                     break
     return pd.DataFrame(data=data, columns=["cluster"] + fields)
 
-#net = ego_network(user_id=10)
+
+# net = ego_network(user_id=10)
