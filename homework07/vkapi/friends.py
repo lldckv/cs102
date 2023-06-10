@@ -34,8 +34,14 @@ def get_friends(
         query = f"/friends.get?access_token={c['access_token']}&user_id={user_id}&count={count}&offset={offset}&fields={','.join(fields)}&v={c['version']}"
     else:
         query = f"/friends.get?access_token={c['access_token']}&user_id={user_id}&count={count}&offset={offset}&v={c['version']}"
-    response = session.get(url=str(query)).json()["response"]
-    return FriendsResponse(count=response["count"], items=response["items"])
+    try:
+        response = session.get(url=str(query)).json()["response"]
+        res=[]
+        for friend in response["items"]:
+            res.append(friend)
+        return FriendsResponse(count=response["count"], items=res)
+    except KeyError:
+        pass
 
 
 class MutualFriends(tp.TypedDict):
@@ -104,9 +110,12 @@ def get_mutual(
 
     response = session.get(url=str(query)).json()
     if response:
-        return response["response"]
+        try:
+            return response["response"]
+        except KeyError:
+            return None  # type: ignore
     return None  # type: ignore
 
 
-# get_mutual(source_uid=431493170, target_uid=11030, count=4)
+# print(get_friends(user_id=431493170))
 # print(get_mutual(target_uids = [1, 2, 3, 4, 5], count=3))
