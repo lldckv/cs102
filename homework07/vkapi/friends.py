@@ -88,10 +88,10 @@ def get_mutual(
         if len(target_uids) % 100 != 0:
             chunks.append(target_uids[100 * (len(target_uids)) // 100 :])
         results = []  # type: ignore
-        offset_ = offset
+        delta = offset
         for chunk in chunks:
-            result = get_mutual(source_uid=source_uid, target_uids=chunk, order=order, offset=offset_)
-            offset_ += 100
+            result = get_mutual(source_uid=source_uid, target_uids=chunk, order=order, offset=delta)
+            delta += 100
             time.sleep(0.34)
             results.extend(result)
         return results
