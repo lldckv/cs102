@@ -23,13 +23,15 @@ def ego_network(
     ego_graph = []
 
     if user_id is not None:
-        friends = get_friends(user_id=user_id)  # type: ignore
-
-    r = get_mutual(source_uid=friends[0], target_uids=friends)  # type: ignore
-    for u in range(len(r)):
-        for i in range(r[u]["common_count"]):  # type: ignore
-            ego_graph.append((r[u]["id"], r[u]["common_friends"][i]))  # type: ignore
-    return ego_graph
+        friends = get_friends(user_id=user_id).items  # type: ignore
+    try:
+        r = get_mutual(source_uid=friends[0], target_uids=friends)  # type: ignore
+        for u in range(len(r)):
+            for i in range(r[u]["common_count"]):  # type: ignore
+                ego_graph.append((r[u]["id"], r[u]["common_friends"][i]))  # type: ignore
+        return ego_graph
+    except TypeError:
+        pass
 
 
 def plot_ego_network(net: tp.List[tp.Tuple[int, int]]) -> None:
@@ -77,3 +79,5 @@ def describe_communities(
                     data.append([cluster_n] + [friend.get(field) for field in fields])  # type: ignore
                     break
     return pd.DataFrame(data=data, columns=["cluster"] + fields)
+
+#net = ego_network(user_id=10)

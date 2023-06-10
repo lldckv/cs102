@@ -4,7 +4,6 @@ import time
 import typing as tp
 
 from vk_api.exceptions import ApiError  # type: ignore
-
 from vkapi import config, session
 
 QueryParams = tp.Optional[tp.Dict[str, tp.Union[str, int]]]
