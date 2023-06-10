@@ -31,7 +31,7 @@ def ego_network(
                 ego_graph.append((r[u]["id"], r[u]["common_friends"][i]))  # type: ignore
         return ego_graph
     except TypeError:
-        pass
+        return None  # type: ignore
 
 
 def plot_ego_network(net: tp.List[tp.Tuple[int, int]]) -> None:

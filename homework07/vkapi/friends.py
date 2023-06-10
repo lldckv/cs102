@@ -40,7 +40,7 @@ def get_friends(
             res.append(friend)
         return FriendsResponse(count=response["count"], items=res)
     except KeyError:
-        pass
+        return None  # type: ignore
 
 
 class MutualFriends(tp.TypedDict):
