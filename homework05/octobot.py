@@ -53,20 +53,27 @@ def connect_table(message):
     """Подключаемся к Google-таблице"""
     url = message.text
     if is_valid_url(url):
-        sheet_id = url.split("/")[url.split("/").index("d") + 1]  # sheet_id
-        try:
-            with open("tables.json") as json_file:
-                tables = json.load(json_file)
-            title = len(tables) + 1
-            tables[title] = {"url": url, "id": sheet_id}
-        except FileNotFoundError:
-            tables = {0: {"url": url, "id": sheet_id}}
-        with open("tables.json", "w") as json_file:
-            json.dump(tables, json_file)
-        bot.send_message(message.chat.id, "Таблица подключена!")
+        pattern = r"^https?://docs\.google\.com/spreadsheets/d/([a-zA-Z0-9-_]+)"
+        match = re.match(pattern, url)
+        if match:
+            sheet_id = url.split("/")[url.split("/").index("d") + 1]  # sheet_id
+            try:
+                with open("tables.json") as json_file:
+                    tables = json.load(json_file)
+                title = len(tables) + 1
+                tables[title] = {"url": url, "id": sheet_id}
+            except FileNotFoundError:
+                tables = {0: {"url": url, "id": sheet_id}}
+            with open("tables.json", "w") as json_file:
+                json.dump(tables, json_file)
+            bot.send_message(message.chat.id, "Таблица подключена!")
+            start(message)
+        else:
+            bot.send_message(message.chat.id, "Url должна указывать на Google-таблицу")
+            start(message)
     else:
         bot.send_message(message.chat.id, "Некорректный url таблицы")
-    start(message)
+        start(message)
 
 
 def access_current_sheet():
@@ -121,23 +128,32 @@ def choose_subject_action(message):
         start_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         df = access_current_sheet()[2]
 
-        for subject in df["Subject"]:
-            start_markup.row(subject)
-        start_markup.row("Главное меню")
+        try:
+            for subject in df["Subject"]:
+                start_markup.row(subject)
+            start_markup.row("Главное меню")
+            info = bot.send_message(message.chat.id, "Название предмета:", reply_markup=start_markup)
+            bot.register_next_step_handler(info, delete_subject)
 
-        info = bot.send_message(message.chat.id, "Название предмета:", reply_markup=start_markup)
-        bot.register_next_step_handler(info, delete_subject)
+        except KeyError:
+            bot.send_message(message.chat.id, "Таблица уже пуста!", reply_markup=start_markup)
+            start(message)
 
     elif message.text == "Изменить название и url предмета":
         start_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
         df = access_current_sheet()[2]
 
-        for subject in df["Subject"]:
-            start_markup.row(subject)
-        start_markup.row("Главное меню")
+        try:
+            for subject in df["Subject"]:
+                start_markup.row(subject)
+            start_markup.row("Главное меню")
 
-        info = bot.send_message(message.chat.id, "Выберите предмет для изменения:", reply_markup=start_markup)
-        bot.register_next_step_handler(info, update_subject)
+            info = bot.send_message(message.chat.id, "Выберите предмет для изменения:", reply_markup=start_markup)
+            bot.register_next_step_handler(info, update_subject)
+
+        except KeyError:
+            bot.send_message(message.chat.id, "Таблица пуста!", reply_markup=start_markup)
+            start(message)
 
     elif message.text == "Добавить предмет":
         info = bot.send_message(message.chat.id, "Название нового предмета:")
@@ -184,51 +200,59 @@ def show_deadlines(message):
 
 def choose_deadline_action(message):
     """Выбираем действие в разделе Редактировать дедлайн"""
-    if message.text == "Удалить дедлайн":
-        info = bot.send_message(message.chat.id, "Название предмета, номер задания через запятую:")
-        bot.register_next_step_handler(info, delete_deadline)
-
-    elif message.text == "Изменить дедлайн":
-        start_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        df = access_current_sheet()[2]
-
-        for subject in df["Subject"]:
-            start_markup.row(subject)
-        start_markup.row("Главное меню")
-
-        info = bot.send_message(
-            message.chat.id,
-            "Нaзвание предмета:",
-            reply_markup=start_markup,
-        )
-        bot.register_next_step_handler(info, choose_subject)
-
-    elif message.text == "Добавить новый дедлайн":
-        start_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-        df = access_current_sheet()[2]
-
-        for subject in df["Subject"]:
-            start_markup.row(subject)
-        start_markup.row("Главное меню")
-
-        info = bot.send_message(
-            message.chat.id,
-            "Название предмета:",
-            reply_markup=start_markup,
-        )
-        bot.register_next_step_handler(info, choose_subject)
-
-    elif message.text == "Главное меню":
+    if message.text == "Главное меню":
+        return start(message)
+    df = access_current_sheet()[2]
+    if df.shape[0] == 0:
+        bot.send_message(message.chat.id, "Таблица пуста! Сначaла добавьте предмет")
         start(message)
 
     else:
-        bot.send_message(message.chat.id, "Я Вас не понимаю...")
-        start(message)
+        if message.text == "Удалить дедлайн":
+            info = bot.send_message(message.chat.id, "Название предмета, номер задания через запятую:")
+            bot.register_next_step_handler(info, delete_deadline)
+
+        elif message.text == "Изменить дедлайн":
+            start_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+
+            for subject in df["Subject"]:
+                start_markup.row(subject)
+            start_markup.row("Главное меню")
+
+            info = bot.send_message(
+                message.chat.id,
+                "Выберите дедлайн:",
+                reply_markup=start_markup,
+            )
+            bot.register_next_step_handler(info, choose_subject)
+
+        elif message.text == "Добавить новый дедлайн":
+            start_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+
+            for subject in df["Subject"]:
+                start_markup.row(subject)
+            start_markup.row("Главное меню")
+
+            info = bot.send_message(
+                message.chat.id,
+                "Название предмета:",
+                reply_markup=start_markup,
+            )
+            bot.register_next_step_handler(info, choose_subject)
+
+        else:
+            bot.send_message(message.chat.id, "Я Вас не понимаю...")
+            start(message)
 
 
 def choose_removal_option(message):
     """Уточняем, точно ли надо удалить все"""
-    warning = bot.send_message(message.chat.id, "Удалить таблицу? Данные о предметах будут утеряны: (Да/Нет)")
+    start_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    start_markup.row("Да")
+    start_markup.row("Нет")
+    warning = bot.send_message(
+        message.chat.id, "Удалить таблицу? Данные о предметах будут утеряны: (Да/Нет)", reply_markup=start_markup
+    )
     bot.register_next_step_handler(warning, clear_subject_list)
 
 
@@ -301,14 +325,25 @@ def delete_deadline(msg):
 def add_new_subject(message):
     """Вносим новое название предмета в Google-таблицу"""
     worksheet, _, df = access_current_sheet()
+    try:
+        if df["Subject"].isin([message.text.lower()]).any():
+            bot.send_message(message.chat.id, f"Данные о предмете {message.text} уже есть в таблице")
+            return start(message)
+        else:
+            worksheet.append_row([message.text])
+            info = bot.send_message(
+                message.chat.id,
+                "Введите нужный url для предмета или любую комбинацию букв-не ссылку, если url не требуется",
+            )
+            bot.register_next_step_handler(info, add_new_subject_url)
 
-    if df["Subject"].isin([message.text]).any():
-        bot.send_message(message.chat.id, f"Данные о предмете {message.text} уже есть в таблице")
-        return start(message)
-
-    worksheet.append_row([message.text])
-    info = bot.send_message(message.chat.id, "Введите url:")
-    bot.register_next_step_handler(info, add_new_subject_url)
+    except KeyError:
+        worksheet.append_row([message.text])
+        info = bot.send_message(
+            message.chat.id,
+            "Введите нужный url для предмета или любую комбинацию букв-не ссылку, если url не требуется",
+        )
+        bot.register_next_step_handler(info, add_new_subject_url)
 
 
 def add_new_subject_url(message):
@@ -319,11 +354,13 @@ def add_new_subject_url(message):
         worksheet.update_cell(index_row, 2, message.text)
 
         bot.send_message(message.chat.id, "Url внесена")
-        start(message)
+        return start(message)
 
     else:
-        bot.send_message(message.chat.id, "Некорректный url")
-        start(message)
+        bot.send_message(
+            message.chat.id, "Некорректный url! Вы всегда можете попробовать еще раз, или оставить предмет без ссылки"
+        )
+        return start(message)
 
 
 def update_subject(message):
@@ -333,7 +370,7 @@ def update_subject(message):
 
     if message_ == "Главное меню":
         return start(message)
-    if not df["Subject"].isin([message_]).any():
+    elif not df["Subject"].isin([message_]).any():
         bot.send_message(message.chat.id, f"Предмет {message_} не был внесен в таблицу")
         return start(message)
 
@@ -390,13 +427,18 @@ def clear_subject_list(message):
 @bot.message_handler(commands=["start"])
 def start(message):
     start_markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    if not access_current_sheet():
+    try:
+        access_current_sheet()
+        start_markup.row("Посмотреть дедлайны на этой неделе")
+        start_markup.row("Редактировать дедлайны")
+        start_markup.row("Редактировать предметы")
+    except ValueError:
         start_markup.row("Подключить Google-таблицу")
-    start_markup.row("Посмотреть дедлайны на этой неделе")
-    start_markup.row("Редактировать дедлайны")
-    start_markup.row("Редактировать предметы")
     info = bot.send_message(message.chat.id, "Что хотите сделать?", reply_markup=start_markup)
     bot.register_next_step_handler(info, choose_action)
 
+
+with open("tables.json", "w") as f:
+    json.dump({}, f)
 
 # bot.infinity_polling()
