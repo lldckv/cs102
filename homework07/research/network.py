@@ -23,11 +23,21 @@ def ego_network(
     ego_graph = []
 
     if user_id is not None:
-        friends = get_friends(user_id=user_id).items  # type: ignore
+        res = []
+        friends = get_friends(user_id=user_id, fields=["can_access_closed"])  # type: ignore
+        if friends != []:
+            for f in friends.items:  # type: ignore
+                if f["can_access_closed"]:
+                    res.append(f["id"])
+            friends = res
+        else:
+            return [(0, 0)]
+        print(friends)
     try:
-        r = get_mutual(source_uid=friends[0], target_uids=friends)  # type: ignore
+        r = get_mutual(target_uids=friends)  # type: ignore
+        print("r", r, user_id, friends)
         for u in range(len(r)):
-            for i in range(r[u]["common_count"]):  # type: ignore
+            for i in range(len(r[u]["common_friends"])):  # type: ignore
                 ego_graph.append((r[u]["id"], r[u]["common_friends"][i]))  # type: ignore
         return ego_graph
     except TypeError:
@@ -79,3 +89,16 @@ def describe_communities(
                     data.append([cluster_n] + [friend.get(field) for field in fields])  # type: ignore
                     break
     return pd.DataFrame(data=data, columns=["cluster"] + fields)
+
+
+net = ego_network(user_id=431493170)
+print(net[:5])
+plot_ego_network(net)
+plot_communities(net)
+print(
+    describe_communities(
+        get_communities(net),
+        get_friends(user_id=431493170, fields=["can_access_closed"]).items,
+        fields=["first_name", "last_name"],
+    )
+)

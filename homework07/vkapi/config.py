@@ -2,6 +2,6 @@
 
 VK_CONFIG = {
     "domain": "https://api.vk.com/method",
-    "access_token": "vk1.a.26A71wDq9-OZAzGQnSxlEplNWiK8sSHRmhbjZVnwEUafQdxTrgdRSYTiGSKW86ts1hTudUiksbGVFZoZSeB3wBkgNmGjXFvjpyQx-YArE6T6_re4Db8oFaxh5kHajGeNrpgV1xDQOPbISBKS7AJPL2rOD3zYSeEnL_Wy5iatqLLOhH9DOfJgKTjQAUwH3Oe4",
+    "access_token": "vk1.a.85JB8YgHkf3X-_lHAEFw_y0mL3RHebbz9CowX1lSyKvXyyvAiWibBxltjyJKcr7Bo2XcRtQ6qEdAaBMXHk3Jr7jnMisC_zdccm4uE4D38IaRZtZcPpFTi7RwXPcB6uDtK-hrvJK-tN-jDeeNX0i15f9IO3HcwhaLMFVVR_3e5p_RjGj00m7-suWEe6D7mLXT",
     "version": "5.126",
 }

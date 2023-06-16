@@ -22,7 +22,7 @@ def age_predict(user_id: int) -> tp.Optional[float]:
             bdate = item["bdate"].split(".")  # type: ignore
             if len(bdate) > 2:
                 b = dt.date(int(bdate[2]), int(bdate[1]), int(bdate[0]))
-                ages.append(int((today - b).days / 365.2425))
+                ages.append(int((today.year - b.year)))
         except KeyError:
             pass
     if ages:
@@ -30,4 +30,4 @@ def age_predict(user_id: int) -> tp.Optional[float]:
     return None
 
 
-# age_predict(431493170)
+# print(age_predict(431493170))
