@@ -126,5 +126,3 @@ def get_mutual(  # type: ignore
                 return None  # type: ignore
         return []  # type: ignore
         # return None  # type: ignore
-
-# print(age_predict(431493170))

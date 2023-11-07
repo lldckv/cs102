@@ -43,7 +43,6 @@ def ego_network(
     except TypeError:
         return None  # type: ignore
 
-
 def plot_ego_network(net: tp.List[tp.Tuple[int, int]]) -> None:
     graph = nx.Graph()
     graph.add_edges_from(net)
@@ -89,16 +88,3 @@ def describe_communities(
                     data.append([cluster_n] + [friend.get(field) for field in fields])  # type: ignore
                     break
     return pd.DataFrame(data=data, columns=["cluster"] + fields)
-
-
-net = ego_network(user_id=431493170)
-print(net[:5])
-plot_ego_network(net)
-plot_communities(net)
-print(
-    describe_communities(
-        get_communities(net),
-        get_friends(user_id=431493170, fields=["can_access_closed"]).items,
-        fields=["first_name", "last_name"],
-    )
-)
