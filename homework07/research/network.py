@@ -1,11 +1,10 @@
 import typing as tp
 from collections import defaultdict
 
-import community as community_louvain
-import matplotlib.pyplot as plt
-import networkx as nx
-import pandas as pd
-
+import community as community_louvain  # type: ignore
+import matplotlib.pyplot as plt  # type: ignore
+import networkx as nx  # type: ignore
+import pandas as pd  # type: ignore
 from vkapi.friends import get_friends, get_mutual
 
 
@@ -18,8 +17,31 @@ def ego_network(
     :param user_id: Идентификатор пользователя, для которого строится граф друзей.
     :param friends: Идентификаторы друзей, между которыми устанавливаются связи.
     """
-    pass
+    if user_id is None and friends is None:
+        raise ValueError("Either 'user_id' or 'friends' must be provided.")
 
+    ego_graph = []
+
+    if user_id is not None:
+        res = []
+        friends = get_friends(user_id=user_id, fields=["can_access_closed"])  # type: ignore
+        if friends != []:
+            for f in friends.items:  # type: ignore
+                if f["can_access_closed"]:
+                    res.append(f["id"])
+            friends = res
+        else:
+            return [(0, 0)]
+        print(friends)
+    try:
+        r = get_mutual(target_uids=friends)  # type: ignore
+        print("r", r, user_id, friends)
+        for u in range(len(r)):
+            for i in range(len(r[u]["common_friends"])):  # type: ignore
+                ego_graph.append((r[u]["id"], r[u]["common_friends"][i]))  # type: ignore
+        return ego_graph
+    except TypeError:
+        return None  # type: ignore
 
 def plot_ego_network(net: tp.List[tp.Tuple[int, int]]) -> None:
     graph = nx.Graph()

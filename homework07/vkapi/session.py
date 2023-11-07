@@ -1,8 +1,8 @@
 import typing as tp
 
-import requests
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+import requests  # type: ignore
+from requests.adapters import HTTPAdapter  # type: ignore
+from requests.packages.urllib3.util.retry import Retry  # type: ignore
 
 
 class Session:
@@ -22,10 +22,24 @@ class Session:
         max_retries: int = 3,
         backoff_factor: float = 0.3,
     ) -> None:
-        pass
+        self.session = requests.Session()
+        retry = Retry(total=max_retries, backoff_factor=backoff_factor, status_forcelist=[500, 400])
+        adapter = HTTPAdapter(max_retries=retry)
+        self.base_url = base_url.rstrip("/")
+        self.session.mount(self.base_url, adapter)
+        self.session.headers.update({"Content-Type": "application/json"})
+        self.timeout = timeout
 
     def get(self, url: str, *args: tp.Any, **kwargs: tp.Any) -> requests.Response:
-        pass
+        full_url = self.base_url + url
+        try:
+            return self.session.get(full_url, *args, **kwargs)
+        except requests.exceptions.RetryError:
+            raise requests.exceptions.RetryError()
 
     def post(self, url: str, *args: tp.Any, **kwargs: tp.Any) -> requests.Response:
-        pass
+        full_url = self.base_url + url
+        try:
+            return self.session.post(full_url, *args, **kwargs)
+        except requests.exceptions.RetryError:
+            raise requests.exceptions.RetryError()
